@@ -1,9 +1,8 @@
-import { useState, useCallback } from "react"
+import { useState, useCallback, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { CodeBlock } from "@/components/code-block"
-import { RefreshCw, Copy, Settings, Terminal, Filter, Play, Pause } from "lucide-react"
+import { RefreshCw, Copy, Settings, Terminal, Play, Pause } from "lucide-react"
 
 interface LogEntry {
   id: number
@@ -17,7 +16,7 @@ export function PlaygroundPage() {
   const [count, setCount] = useState(0)
   const [renderCount, setRenderCount] = useState(1)
   const [logs, setLogs] = useState<LogEntry[]>([])
-  const [logId, setLogId] = useState(0)
+  const logIdRef = useRef(0)
 
   const [config, setConfig] = useState({
     enabled: true,
@@ -36,13 +35,11 @@ export function PlaygroundPage() {
   const addLog = useCallback((type: string, text: string) => {
     if (!config.enabled) return
     const time = new Date().toLocaleTimeString("en-US", { hour12: false }) + "." + String(Date.now() % 1000).padStart(3, "0")
-    setLogId((prev) => {
-      const newId = prev + 1
-      setLogs((prevLogs) => {
-        const newLogs = [...prevLogs, { id: newId, type, text, time }]
-        return newLogs.slice(-config.maxLogs)
-      })
-      return newId
+    logIdRef.current += 1
+    const newId = logIdRef.current
+    setLogs((prevLogs) => {
+      const newLogs = [...prevLogs, { id: newId, type, text, time }]
+      return newLogs.slice(-config.maxLogs)
     })
   }, [config.enabled, config.maxLogs])
 
@@ -91,6 +88,7 @@ export function PlaygroundPage() {
 
   const resetDemo = () => {
     setLogs([])
+    logIdRef.current = 0
     setCount(0)
     setRenderCount(1)
     handleMount()
