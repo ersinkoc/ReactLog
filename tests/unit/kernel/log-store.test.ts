@@ -187,4 +187,71 @@ describe('LogStore', () => {
       expect(logStore.getComponentCount()).toBe(2)
     })
   })
+
+  describe('trimLogs edge cases', () => {
+    it('should delete component index when all logs for component are trimmed', () => {
+      const store = createLogStore(3)
+
+      // Add 3 logs for comp-1
+      store.addLog(createMockLogEntry({ componentId: 'comp-1', id: 'log-1' }))
+      store.addLog(createMockLogEntry({ componentId: 'comp-1', id: 'log-2' }))
+      store.addLog(createMockLogEntry({ componentId: 'comp-1', id: 'log-3' }))
+
+      // Verify comp-1 is in the index
+      expect(store.byComponent.has('comp-1')).toBe(true)
+
+      // Add 3 more logs for comp-2 (will trigger trim, removing all comp-1 logs)
+      store.addLog(createMockLogEntry({ componentId: 'comp-2', id: 'log-4' }))
+      store.addLog(createMockLogEntry({ componentId: 'comp-2', id: 'log-5' }))
+      store.addLog(createMockLogEntry({ componentId: 'comp-2', id: 'log-6' }))
+
+      // comp-1 index should be deleted because all its logs were trimmed
+      expect(store.byComponent.has('comp-1')).toBe(false)
+      expect(store.byComponent.has('comp-2')).toBe(true)
+    })
+
+    it('should delete type index when all logs for type are trimmed', () => {
+      const store = createLogStore(2)
+
+      // Add 2 mount logs
+      store.addLog(createMockLogEntry({ id: 'log-1' }))
+      store.addLog(createMockLogEntry({ id: 'log-2' }))
+
+      // Verify mount type is in the index
+      expect(store.byType.has('mount')).toBe(true)
+
+      // Create unmount event
+      const unmountEvent = {
+        type: 'unmount' as const,
+        componentId: 'test-id',
+        componentName: 'TestComponent',
+        timestamp: Date.now(),
+        lifetime: 1000,
+      }
+
+      // Add 2 unmount logs (will trigger trim, removing all mount logs)
+      store.addLog({
+        id: 'log-3',
+        timestamp: Date.now(),
+        componentId: 'test-id',
+        componentName: 'TestComponent',
+        event: unmountEvent,
+        level: 'info',
+        formatted: 'Unmount log',
+      })
+      store.addLog({
+        id: 'log-4',
+        timestamp: Date.now(),
+        componentId: 'test-id',
+        componentName: 'TestComponent',
+        event: unmountEvent,
+        level: 'info',
+        formatted: 'Unmount log',
+      })
+
+      // mount type index should be deleted because all its logs were trimmed
+      expect(store.byType.has('mount')).toBe(false)
+      expect(store.byType.has('unmount')).toBe(true)
+    })
+  })
 })

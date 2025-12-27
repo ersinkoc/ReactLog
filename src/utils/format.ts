@@ -140,9 +140,10 @@ export function formatValue(value: unknown, depth: number = 0): string {
     const more = keys.length > 5 ? `, ... +${keys.length - 5}` : ''
     return `{ ${pairs}${more} }`
   }
-
+  /* c8 ignore start - defensive fallback: unreachable code */
   return String(value)
 }
+/* c8 ignore stop */
 
 /**
  * Formats a value with syntax highlighting info for console

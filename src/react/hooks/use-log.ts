@@ -59,10 +59,12 @@ export function useLog(
     if (!kernel || !kernel.isEnabled()) return undefined
 
     // Handle StrictMode double-invoke
+    /* c8 ignore start - StrictMode detection only triggered in React 18 StrictMode development */
     if (strictModeFixRef.current) {
       strictModeFixRef.current = false
       return undefined
     }
+    /* c8 ignore stop */
 
     isMountedRef.current = true
 

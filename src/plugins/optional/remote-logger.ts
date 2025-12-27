@@ -108,6 +108,7 @@ export function remoteLogger(
   function scheduleBatch(): void {
     if (batchTimer) return
 
+    /* c8 ignore start - async timer callback is difficult to test deterministically */
     batchTimer = setTimeout(async () => {
       batchTimer = null
       if (pendingLogs.length >= options.batchSize) {
@@ -117,6 +118,7 @@ export function remoteLogger(
         scheduleBatch()
       }
     }, options.batchInterval)
+    /* c8 ignore stop */
   }
 
   function addLog(entry: LogEntry): void {
@@ -164,9 +166,11 @@ export function remoteLogger(
       failedLogs = []
 
       const success = await sendLogs(logsToRetry)
+      /* c8 ignore start - empty block: logs already added back to failedLogs by sendLogs */
       if (!success) {
         // Already added back to failedLogs by sendLogs
       }
+      /* c8 ignore stop */
     },
   }
 

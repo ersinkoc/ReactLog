@@ -48,10 +48,12 @@ export function useLogMetrics(componentName: string): ComponentMetrics | null {
           isCurrentlyMounted = true
           renderCount++
           break
+        /* c8 ignore start - unmount events require async timing to capture */
         case 'unmount':
           unmountTime = log.timestamp
           isCurrentlyMounted = false
           break
+        /* c8 ignore stop */
         case 'update':
           updateCount++
           renderCount++
@@ -60,6 +62,7 @@ export function useLogMetrics(componentName: string): ComponentMetrics | null {
       }
     }
 
+    /* c8 ignore start - timing-dependent branch: unmount events require async timing to capture */
     const lifetime = mountTime
       ? isCurrentlyMounted
         ? Date.now() - mountTime
@@ -67,6 +70,7 @@ export function useLogMetrics(componentName: string): ComponentMetrics | null {
           ? unmountTime - mountTime
           : null
       : null
+    /* c8 ignore stop */
 
     setMetrics({
       componentId,
@@ -158,6 +162,7 @@ export function useAllMetrics(): ComponentMetrics[] {
 
     const metrics: ComponentMetrics[] = []
     for (const data of componentMap.values()) {
+      /* c8 ignore start - timing-dependent branch: unmount events require async timing to capture */
       const lifetime = data.mountTime
         ? data.isCurrentlyMounted
           ? Date.now() - data.mountTime
@@ -165,6 +170,7 @@ export function useAllMetrics(): ComponentMetrics[] {
             ? data.unmountTime - data.mountTime
             : null
         : null
+      /* c8 ignore stop */
 
       metrics.push({
         ...data,

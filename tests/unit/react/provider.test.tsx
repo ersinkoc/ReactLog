@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { ReactLogProvider } from '../../../src/react/provider'
-import { useLogContext } from '../../../src/react/context'
+import { useLogContext, useOptionalLogContext } from '../../../src/react/context'
 import type { Kernel } from '../../../src/types'
 
 describe('ReactLogProvider', () => {
@@ -92,5 +92,51 @@ describe('ReactLogProvider', () => {
 
     expect(customPlugin.install).toHaveBeenCalled()
     expect(capturedKernel?.getPlugin('custom-plugin')).toBeDefined()
+  })
+})
+
+describe('useLogContext', () => {
+  it('should throw error when used outside provider', () => {
+    function TestComponent() {
+      useLogContext()
+      return <div>Test</div>
+    }
+
+    expect(() => {
+      render(<TestComponent />)
+    }).toThrow('useLogContext must be used within a ReactLogProvider')
+  })
+})
+
+describe('useOptionalLogContext', () => {
+  it('should return null when used outside provider', () => {
+    let result: Kernel | null = null
+
+    function TestComponent() {
+      result = useOptionalLogContext()
+      return <div>Test</div>
+    }
+
+    render(<TestComponent />)
+
+    expect(result).toBeNull()
+  })
+
+  it('should return kernel when used inside provider', () => {
+    let result: Kernel | null = null
+
+    function TestComponent() {
+      result = useOptionalLogContext()
+      return <div>Test</div>
+    }
+
+    render(
+      <ReactLogProvider>
+        <TestComponent />
+      </ReactLogProvider>
+    )
+
+    expect(result).not.toBeNull()
+    expect(result?.isEnabled()).toBe(true)
   })
 })

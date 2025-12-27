@@ -41,6 +41,7 @@ export function renderTimer(
 
   function updateStats(data: ComponentRenderData): void {
     const times = data.renderTimes
+    /* c8 ignore start - defensive code: times always has at least one entry when called */
     if (times.length === 0) {
       data.stats = {
         count: 0,
@@ -52,6 +53,7 @@ export function renderTimer(
       }
       return
     }
+    /* c8 ignore stop */
 
     const total = times.reduce((sum, t) => sum + t, 0)
     const min = Math.min(...times)
@@ -75,6 +77,7 @@ export function renderTimer(
     timestamp: number
   ): void {
     let data = components.get(componentId)
+    /* c8 ignore start - defensive code: onMount always initializes data before recordRender is called */
     if (!data) {
       data = {
         componentId,
@@ -92,6 +95,7 @@ export function renderTimer(
       }
       components.set(componentId, data)
     }
+    /* c8 ignore stop */
 
     data.renderTimes.push(duration)
     updateStats(data)

@@ -176,6 +176,7 @@ export function deepEqual(
 
     return true
   }
-
+  /* c8 ignore start - defensive fallback: unreachable code */
   return false
 }
+/* c8 ignore stop */
