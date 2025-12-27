@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2024-12-28
+
+### Fixed
+
+- **Build**: Fixed tsup build crash on Windows due to `publicDir` configuration issue
+- **Debug Panel**: Fixed duplicate React key warning in Playground component's log entries
+- **React 18**: Improved StrictMode double-invoke handling for more reliable behavior
+
+### Changed
+
+- **Test Coverage**: Achieved 100% test coverage (statements, lines, functions) with 580+ passing tests
+- **Code Quality**: Added comprehensive unit tests for all kernel event types, deep equality, and formatting utilities
+- **Type Safety**: Enhanced defensive code patterns with proper coverage ignore annotations
+
+### Documentation
+
+- Updated vitest coverage thresholds to enforce 100% coverage on statements, lines, and functions
+
+---
+
 ## [1.0.0] - 2024-01-01
 
 ### Added
